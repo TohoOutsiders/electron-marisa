@@ -1,13 +1,26 @@
 <template>
   <div class="header drag">
-    <div class="btn_group">
-      <span class="close"></span>
-      <span class="hidden"></span>
+    <div class="btn_group no_drag">
+      <span class="close no_drag" @click="closeWindow"></span>
+      <span class="hidden no_drag" @click="minimizeWindow"></span>
     </div>
   </div>
 </template>
 <script>
+import { remote } from 'electron'
+const { BrowserWindow } = remote
+
 export default {
+  methods: {
+    closeWindow () {
+      const window = BrowserWindow.getFocusedWindow()
+      window.close()
+    },
+    minimizeWindow () {
+      const window = BrowserWindow.getFocusedWindow()
+      window.minimize()
+    }
+  }
 }
 </script>
 <style lang="stylus" scoped>
