@@ -3,10 +3,17 @@
     <div class="container">
       <div class="talk-panel">
         <span>うるさい! うるさい.. うるさい...</span>
-        <div class="talk-place"></div>
+        <div class="talk-place">
+          <div class="talk_entry"
+              v-for="item in talk_list"
+              :class="{'you_color': item.name == 'You'}"
+          >
+            <span class="talk_item" v-text="item.name" :class="{'you_color': item.name == 'You'}"></span>&nbsp;:&nbsp;<span class="talk_item" v-text="item.content" :class="{'you_color': item.name == 'You'}"></span>
+          </div>
+        </div>
         <div class="speak">
-          <input type="text" name="you" />
-          <input type="submit" value="发送" />
+          <input @keydown="sendMessage($event)" ref="you" type="text" name="you" />
+          <input @click="sendMessage($event)" ref="submit" type="submit" value="发送" />
         </div>
       </div>
       <div class="profile">
@@ -35,7 +42,32 @@
   </div>
 </template>
 <script>
-export default {}
+export default {
+  data () {
+    return {
+      talk_list: []
+    }
+  },
+  methods: {
+    async sendMessage (event) {
+      if (event.keyCode === 13 || event.button === 0) {
+        let _youTalk = {
+          name: 'You',
+          content: await this.$refs.you.value
+        }
+        this.talk_list.push(_youTalk)
+        this.$refs.you.value = ''
+      }
+    }
+  },
+  created () {
+    let _startTalk = {
+      name: '白絲魔理沙',
+      content: '白絲魔理沙 Type 0.001,还在继续升级da★ze！'
+    }
+    this.talk_list.push(_startTalk)
+  }
+}
 </script>
 <style lang="stylus" scoped>
 @import "~@/assets/stylus/variable"
@@ -68,24 +100,52 @@ export default {}
     text-indent: 9px
     color: $order-blue
   .talk-place
-    width: 100%
+    width: clac(100% - 10px)
     height: 420px
+    padding-left: 10px
     overflow-y: scroll
+    .talk_entry
+      width: 100%
+      font-size: 14px
+      margin-top: 12px
+      word-break: break-all
+      line-height: 25px
+      .talk_item
+        display: inline
+        background: transparent
+        border: none
+        line-height: 0
   .speak
     width: 100%
     height: 39px
+    input
+      background: none
+      outline: 0
+      border: none
     & input[name='you']
       position: relative
       top: 10px
       left: 5px
       width: 382px
-      height: 20px
+      height: 24px
+      padding-left: 5px
+      background: rgba(255, 255, 255, .2)
+      border: 1px solid $border-color
+      transition: all .2s
+      &:hover,&:focus
+        background: rgba(255, 255, 255, .6)
+        border-radius: 5px
     & input[type='submit']
       position: relative
-      top: 12px
+      top: 9px
       left: 15px
       width: 48px
       height: 22px
+      background: rgba(255, 255, 255, .2)
+      border: 1px solid $border-color
+      border-radius: 5px
+      font-size: 12px
+      transition: all .2s
 .profile
   width: 220px
   height: 502px
@@ -117,4 +177,7 @@ export default {}
     .marisa-cmd
       display: inline
       font-weight: bold
+
+.you_color
+  color: #836FFF !important
 </style>

@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "author": "gutrse3321 <gutrse3321@live.com>",
   "description": "An electron-vue project",
-  "license": null,
+  "license": "",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js",
