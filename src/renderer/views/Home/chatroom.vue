@@ -3,7 +3,7 @@
     <div class="container">
       <div class="talk-panel">
         <span>うるさい! うるさい.. うるさい...</span>
-        <div class="talk-place">
+        <div ref="talk_place" class="talk-place">
           <div class="talk_entry"
               v-for="item in talk_list"
               :class="{'you_color': item.name == 'You'}"
@@ -12,7 +12,10 @@
           </div>
         </div>
         <div class="speak">
-          <input @keydown="sendMessage($event)" ref="you" type="text" name="you" />
+          <input @keydown="sendMessage($event)"
+                ref="you"
+                v-focus="true" type="text" name="you"
+          />
           <input @click="sendMessage($event)" ref="submit" type="submit" value="发送" />
         </div>
       </div>
@@ -42,6 +45,9 @@
   </div>
 </template>
 <script>
+const MARISA = '白絲魔理沙'
+const YOU = 'You'
+
 export default {
   data () {
     return {
@@ -50,19 +56,40 @@ export default {
   },
   methods: {
     async sendMessage (event) {
+      let _content = await this.$refs.you.value
+      if (_content === '') return false
       if (event.keyCode === 13 || event.button === 0) {
         let _youTalk = {
-          name: 'You',
-          content: await this.$refs.you.value
+          name: YOU,
+          content: _content
         }
         this.talk_list.push(_youTalk)
         this.$refs.you.value = ''
+        this._marisaRelpy(_content)
       }
+    },
+    _marisaRelpy () {
+      let _marisaTalk = {
+        name: MARISA,
+        content: '人类的本质就是复读机。'
+      }
+      setTimeout(() => {
+        this.talk_list.push(_marisaTalk)
+      }, 300)
+    },
+    _scrollBottom () {
+      this.$nextTick(() => {
+        let _scrollHeight = this.$refs.talk_place.scrollHeight
+        this.$refs.talk_place.scrollTop = _scrollHeight
+      })
     }
+  },
+  updated () {
+    this._scrollBottom()
   },
   created () {
     let _startTalk = {
-      name: '白絲魔理沙',
+      name: MARISA,
       content: '白絲魔理沙 Type 0.001,还在继续升级da★ze！'
     }
     this.talk_list.push(_startTalk)
@@ -172,7 +199,6 @@ export default {
       margin-bottom: 13px
       margin-top: 13px
     .cmd-collect
-      text-decoration: line-through
       text-indent: 1em
     .marisa-cmd
       display: inline

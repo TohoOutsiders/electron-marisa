@@ -4,6 +4,9 @@
       <span class="close no_drag" @click="closeWindow"></span>
       <span class="hidden no_drag" @click="minimizeWindow"></span>
     </div>
+    <div class="header_title">
+      白絲魔理沙 -連線中-
+    </div>
   </div>
 </template>
 <script>
@@ -26,7 +29,7 @@ export default {
 <style lang="stylus" scoped>
 .header
   display: flex
-  justify-content: flex-start
+  flex-direction: row
   width: 714px
   height: 28px
   background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%)
@@ -88,4 +91,9 @@ export default {
       background: #EE9A00
       &:before
         opacity: 1
+.header_title
+  margin-left: 35%
+  height: 100%
+  font-size: 12px
+  line-height: 28px
 </style>
