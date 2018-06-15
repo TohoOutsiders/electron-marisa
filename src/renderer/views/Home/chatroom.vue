@@ -51,7 +51,8 @@ const YOU = 'You'
 export default {
   data () {
     return {
-      talk_list: []
+      talk_list: [],
+      cmd_flag: 0
     }
   },
   methods: {
@@ -64,32 +65,63 @@ export default {
           content: _content
         }
         this.talk_list.push(_youTalk)
+        switch (this.cmd_flag) {
+          case 0: this._marisaThinking(_content)
+            break
+          case 1: this._teachMarisa(_content)
+            break
+        }
         this.$refs.you.value = ''
-        // this._marisaRelpy()
       }
+    },
+    _marisaThinking (_content) {
       switch (_content) {
-        case 'teach': this._teachMode()
+        case 'teach':
+          this.talk_list.push({
+            name: MARISA,
+            content: '好哒，你要教我什么呢？格式：You的消息`白絲魔理沙的回复'
+          })
+          this.cmd_flag = 1
           break
-        default: this._marisaRelpy()
+        default: this._marisaReply(_content)
       }
     },
-    _teachMode () {
-      let _marisaTalk = {
-        name: MARISA,
-        content: '好哒，你要教我什么呀？'
+    _marisaReply (_content) {
+      let memorise = this.$db.get('memorise').value()
+      let answer = ''
+      for (let i = 0; i < memorise.length; i++) {
+        memorise[i].keyword.forEach(item => {
+          if (item === _content) {
+            answer = memorise[i].answer
+          }
+        })
       }
-      setTimeout(() => {
-        this.talk_list.push(_marisaTalk)
-      }, 300)
+      if (answer !== '') {
+        this.talk_list.push({
+          name: MARISA,
+          content: answer
+        })
+      } else {
+        this.talk_list.push({
+          name: MARISA,
+          content: '唔嗯...不懂你在说什么呢...'
+        })
+      }
     },
-    _marisaRelpy () {
-      let _marisaTalk = {
-        name: MARISA,
-        content: '人类的本质就是复读机。'
+    _teachMarisa (_content) {
+      let str = _content.split('`')
+      let memorey = {
+        keyword: [
+          str[0]
+        ],
+        answer: str[1]
       }
-      setTimeout(() => {
-        this.talk_list.push(_marisaTalk)
-      }, 300)
+      this.$db.get('memorise').push(memorey).write()
+      this.talk_list.push({
+        name: MARISA,
+        content: `ok，当你说"${str[0]}"的时候，嗯...好！老子就说"${str[1]}"DA☆ZE`
+      })
+      this.cmd_flag = 0
     },
     _scrollBottom () {
       this.$nextTick(() => {
@@ -104,7 +136,7 @@ export default {
   created () {
     let _startTalk = {
       name: MARISA,
-      content: '白絲魔理沙 Type 0.001,还在继续升级da★ze！'
+      content: '白絲魔理沙 Type 0.001,还在继续升级DA☆ZE！'
     }
     this.talk_list.push(_startTalk)
   }
