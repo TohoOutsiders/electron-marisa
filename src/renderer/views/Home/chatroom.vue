@@ -3,7 +3,7 @@
     <div class="container">
       <div class="talk-panel">
         <span>うるさい! うるさい.. うるさい...</span>
-        <div class="talk-place">
+        <div ref="talk_place" class="talk-place">
           <div class="talk_entry"
               v-for="item in talk_list"
               :class="{'you_color': item.name == 'You'}"
@@ -12,7 +12,10 @@
           </div>
         </div>
         <div class="speak">
-          <input @keydown="sendMessage($event)" ref="you" type="text" name="you" />
+          <input @keydown="sendMessage($event)"
+                ref="you"
+                v-focus="true" type="text" name="you"
+          />
           <input @click="sendMessage($event)" ref="submit" type="submit" value="发送" />
         </div>
       </div>
@@ -23,16 +26,16 @@
             系统级指令快速说明——
           </span>
           <span class="system-cmd cmd-collect">
-            <span class="marisa-cmd">/teach</span>&nbsp;进入内容教学模式
+            <span class="marisa-cmd">teach</span>&nbsp;进入内容教学模式
           </span>
           <span class="system-cmd cmd-collect">
-            <span class="marisa-cmd">forget</span>&nbsp;忘记最后所说的内容
+            <del><span class="marisa-cmd">forget</span>&nbsp;忘记最后所说的内容</del>
           </span>
           <span class="system-cmd cmd-collect">
-            <span class="marisa-cmd">application</span>&nbsp;管理外部应用接口
+            <del><span class="marisa-cmd">application</span>&nbsp;管理外部应用接口</del>
           </span>
           <span class="system-cmd cmd-collect">
-            <span class="marisa-cmd">status</span>&nbsp;查看目前知识所掌握情况
+            <del><span class="marisa-cmd">status</span>&nbsp;查看目前知识所掌握情况</del>
           </span>
           另外你也可以通过输入
           <del style="font-weight:bold;">hint</del> 查看其他人自定义的内容提示或小小线索<br><br> 魔理沙无条件的相信你..她把你交给她的所有知识视作珍宝并会很认真的将其牢牢记住..不要让她学坏哦!
@@ -42,28 +45,98 @@
   </div>
 </template>
 <script>
+const MARISA = '白絲魔理沙'
+const YOU = 'You'
+
 export default {
   data () {
     return {
-      talk_list: []
+      talk_list: [],
+      cmd_flag: 0
     }
   },
   methods: {
     async sendMessage (event) {
+      let _content = await this.$refs.you.value
+      if (_content === '') return false
       if (event.keyCode === 13 || event.button === 0) {
         let _youTalk = {
-          name: 'You',
-          content: await this.$refs.you.value
+          name: YOU,
+          content: _content
         }
         this.talk_list.push(_youTalk)
+        switch (this.cmd_flag) {
+          case 0: this._marisaThinking(_content)
+            break
+          case 1: this._teachMarisa(_content)
+            break
+        }
         this.$refs.you.value = ''
       }
+    },
+    _marisaThinking (_content) {
+      switch (_content) {
+        case 'teach':
+          this.talk_list.push({
+            name: MARISA,
+            content: '好哒，你要教我什么呢？格式：You的消息`白絲魔理沙的回复'
+          })
+          this.cmd_flag = 1
+          break
+        default: this._marisaReply(_content)
+      }
+    },
+    _marisaReply (_content) {
+      let memorise = this.$db.get('memorise').value()
+      let answer = ''
+      for (let i = 0; i < memorise.length; i++) {
+        memorise[i].keyword.forEach(item => {
+          if (item === _content) {
+            answer = memorise[i].answer
+          }
+        })
+      }
+      if (answer !== '') {
+        this.talk_list.push({
+          name: MARISA,
+          content: answer
+        })
+      } else {
+        this.talk_list.push({
+          name: MARISA,
+          content: '唔嗯...不懂你在说什么呢...'
+        })
+      }
+    },
+    _teachMarisa (_content) {
+      let str = _content.split('`')
+      let memorey = {
+        keyword: [
+          str[0]
+        ],
+        answer: str[1]
+      }
+      this.$db.get('memorise').push(memorey).write()
+      this.talk_list.push({
+        name: MARISA,
+        content: `ok，当你说"${str[0]}"的时候，嗯...好！老子就说"${str[1]}"DA☆ZE`
+      })
+      this.cmd_flag = 0
+    },
+    _scrollBottom () {
+      this.$nextTick(() => {
+        let _scrollHeight = this.$refs.talk_place.scrollHeight
+        this.$refs.talk_place.scrollTop = _scrollHeight
+      })
     }
+  },
+  updated () {
+    this._scrollBottom()
   },
   created () {
     let _startTalk = {
-      name: '白絲魔理沙',
-      content: '白絲魔理沙 Type 0.001,还在继续升级da★ze！'
+      name: MARISA,
+      content: '白絲魔理沙 Type 0.001,还在继续升级DA☆ZE！'
     }
     this.talk_list.push(_startTalk)
   }
@@ -172,7 +245,6 @@ export default {
       margin-bottom: 13px
       margin-top: 13px
     .cmd-collect
-      text-decoration: line-through
       text-indent: 1em
     .marisa-cmd
       display: inline

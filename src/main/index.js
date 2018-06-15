@@ -1,6 +1,7 @@
 'use strict'
 
 import { app, BrowserWindow } from 'electron'
+import db from '../datastore'
 // 衹允許單例運行
 const appInstance = app.makeSingleInstance((commandLine, workingDirectory) => {
   if (global._win.main) {
@@ -56,5 +57,6 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
+    db.read().get('memorise').value()
   }
 })
