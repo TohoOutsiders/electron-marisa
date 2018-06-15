@@ -26,16 +26,16 @@
             系统级指令快速说明——
           </span>
           <span class="system-cmd cmd-collect">
-            <span class="marisa-cmd">/teach</span>&nbsp;进入内容教学模式
+            <span class="marisa-cmd">teach</span>&nbsp;进入内容教学模式
           </span>
           <span class="system-cmd cmd-collect">
-            <span class="marisa-cmd">forget</span>&nbsp;忘记最后所说的内容
+            <del><span class="marisa-cmd">forget</span>&nbsp;忘记最后所说的内容</del>
           </span>
           <span class="system-cmd cmd-collect">
-            <span class="marisa-cmd">application</span>&nbsp;管理外部应用接口
+            <del><span class="marisa-cmd">application</span>&nbsp;管理外部应用接口</del>
           </span>
           <span class="system-cmd cmd-collect">
-            <span class="marisa-cmd">status</span>&nbsp;查看目前知识所掌握情况
+            <del><span class="marisa-cmd">status</span>&nbsp;查看目前知识所掌握情况</del>
           </span>
           另外你也可以通过输入
           <del style="font-weight:bold;">hint</del> 查看其他人自定义的内容提示或小小线索<br><br> 魔理沙无条件的相信你..她把你交给她的所有知识视作珍宝并会很认真的将其牢牢记住..不要让她学坏哦!
@@ -65,8 +65,22 @@ export default {
         }
         this.talk_list.push(_youTalk)
         this.$refs.you.value = ''
-        this._marisaRelpy(_content)
+        // this._marisaRelpy()
       }
+      switch (_content) {
+        case 'teach': this._teachMode()
+          break
+        default: this._marisaRelpy()
+      }
+    },
+    _teachMode () {
+      let _marisaTalk = {
+        name: MARISA,
+        content: '好哒，你要教我什么呀？'
+      }
+      setTimeout(() => {
+        this.talk_list.push(_marisaTalk)
+      }, 300)
     },
     _marisaRelpy () {
       let _marisaTalk = {
