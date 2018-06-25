@@ -4,9 +4,9 @@ import db from '../datastore'
 import App from './App'
 import router from './router'
 import store from './store'
-import Segment from 'segment'
-const segment = new Segment()
-segment.useDefault()
+// import Segment from 'segment'
+// const segment = new Segment()
+// segment.useDefault()
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
@@ -28,7 +28,7 @@ Vue.directive('focus', {
 // 注册全局$db
 Vue.prototype.$db = db
 // 注册全局$dictionary 分词字典
-Vue.prototype.$dictionary = segment
+// Vue.prototype.$dictionary = segment
 
 /* eslint-disable no-new */
 new Vue({
