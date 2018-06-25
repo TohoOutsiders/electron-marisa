@@ -32,8 +32,7 @@
               <span class="marisa-cmd">application</span>&nbsp;管理外部应用接口</del>
           </span>
           <span class="system-cmd cmd-collect">
-            <del>
-              <span class="marisa-cmd">status</span>&nbsp;查看目前知识所掌握情况</del>
+              <span class="marisa-cmd">status</span>&nbsp;查看目前知识所掌握情况
           </span>
           另外你也可以通过输入
           <del style="font-weight:bold;">hint</del> 查看其他人自定义的内容提示或小小线索<br><br> 魔理沙无条件的相信你..她把你交给她的所有知识视作珍宝并会很认真的将其牢牢记住..不要让她学坏哦!
@@ -77,9 +76,12 @@ export default {
         case 'teach':
           this.talk_list.push({
             name: MARISA,
-            content: '<br />好的，你要教我什么呢？<br/ >格式：You的消息`白絲魔理沙的回复'
+            content: '要教给魔里沙什么 ..? 现在只能学习语句.. 如"问`答".. 中止教学输入 exit ..'
           })
           this.cmd_flag = 1
+          break
+        case 'status':
+          this._marisaStatus()
           break
         default: this._marisaReply(_content)
       }
@@ -101,8 +103,7 @@ export default {
               ratio++
             }
           })
-          console.log('ratio:' + ratio)
-          if ((ratio / keywords.length) > 0.8) {
+          if ((ratio / keywords.length) >= 0.5) {
             answer = memorise[i].answer
             break
           }
@@ -119,12 +120,17 @@ export default {
           name: MARISA,
           content: '唔嗯...不懂你在说什么呢...'
         })
-        console.log(this.$dictionary.doSegment(_content, {
-          simple: true
-        }))
       }
     },
     _teachMarisa (_content) {
+      if (_content === 'exit') {
+        this.talk_list.push({
+          name: YOU,
+          content: '白丝魔理沙，退出学习模式'
+        })
+        this.cmd_flag = 0
+        return
+      }
       // 将you`marisa格式转换为[you,marisa]数组
       let str = _content.split('`')
       // 将you的句子分词分一个数组
@@ -144,7 +150,7 @@ export default {
               ratio++
             }
           })
-          if ((ratio / keywords.length) > 0.5) {
+          if ((ratio / keywords.length) >= 0.5) {
             keywords.concat(toPpl)
             // 去除重复的关键词或字
             keywords = Array.from(new Set(keywords.filter((x, i, self) => self.indexOf(x) === i)))
@@ -170,6 +176,14 @@ export default {
         content: '行，我知道了'
       })
       this.cmd_flag = 0
+    },
+    _marisaStatus () {
+      let memorise = this.$db.get('memorise').value().length
+      let weight = 0.00011 * parseFloat(memorise)
+      this.talk_list.push({
+        name: MARISA,
+        content: `目前魔理沙的脑重量是${weight} 克。如果我现在还不能理解您的意思的话，请教给我更多的知识，我会非常非常用心学习的～`
+      })
     },
     _scrollBottom () {
       this.$nextTick(() => {
