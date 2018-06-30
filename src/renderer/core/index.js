@@ -5,7 +5,7 @@ segment.useDefault()
 
 export default class MarisaCore {
   /**
-   * 魔理沙与你的说话格式
+   * 魔理沙与你的说话格式,以及处理You的说话格式
    * @param {String} name
    * @param {String} content
    */
@@ -28,7 +28,7 @@ export default class MarisaCore {
     let keywords = []
 
     // 处理获取的_content到数据库去遍历查询
-    // 大于80%就回复对应回答
+    // 大于60%就回复对应回答
     for (let i = 0; i < memorise.length; i++) {
       let ratio = 0
       keywords = memorise[i].keyword
@@ -38,7 +38,7 @@ export default class MarisaCore {
             ratio++
           }
         })
-        if ((ratio / keywords.length) >= 0.5) {
+        if ((ratio / keywords.length) >= 0.6) {
           answer = memorise[i].answer
           break
         }
@@ -70,7 +70,7 @@ export default class MarisaCore {
             ratio++
           }
         })
-        if ((ratio / keywords.length) >= 0.5) {
+        if ((ratio / keywords.length) >= 0.6) {
           keywords.concat(toPpl)
           // 去除重复的关键词或字
           keywords = Array.from(new Set(keywords.filter((x, i, self) => self.indexOf(x) === i)))
@@ -89,5 +89,27 @@ export default class MarisaCore {
       }
     }
     return memorey
+  }
+
+  /**
+   * 魔理沙记忆消除中枢
+   * @param {Array} list
+   */
+  static forget (list) {
+    let answers = []
+    list.forEach((item) => {
+      if (item.name === '白絲魔理沙') {
+        answers.push(item)
+      }
+    })
+    if (answers.length > 1) {
+      let finder = db.get('memorise').find({answer: answers[answers.length - 1].content}).value()
+      if (finder !== undefined) {
+        db.get('memorise').remove({answer: finder.answer}).write()
+        return true
+      } else {
+        return false
+      }
+    }
   }
 }

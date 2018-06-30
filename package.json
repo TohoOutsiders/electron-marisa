@@ -1,7 +1,7 @@
 {
   "name": "marisa",
   "productName": "marisa",
-  "version": "0.0.001",
+  "version": "0.0.1",
   "author": "gutrse3321 <gutrse3321@live.com>",
   "description": "大家的老朋友，莎莎",
   "license": "",
@@ -20,6 +20,7 @@
     "pack": "npm run pack:main && npm run pack:renderer",
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
+    "packorder": "npm run pack && electron-packager . --overwrite --asar=true --icon=./src/renderer/assets/icon.ico",
     "postinstall": "npm run lint:fix"
   },
   "dependencies": {
