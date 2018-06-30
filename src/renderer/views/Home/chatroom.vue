@@ -24,12 +24,10 @@
             <span class="marisa-cmd">teach</span>&nbsp;进入内容教学模式
           </span>
           <span class="system-cmd cmd-collect">
-            <del>
-              <span class="marisa-cmd">forget</span>&nbsp;忘记最后所说的内容</del>
+            <span class="marisa-cmd">forget</span>&nbsp;忘记最后所说的内容
           </span>
           <span class="system-cmd cmd-collect">
-            <del>
-              <span class="marisa-cmd">application</span>&nbsp;管理外部应用接口</del>
+            <del><span class="marisa-cmd">application</span>&nbsp;管理外部应用接口</del>
           </span>
           <span class="system-cmd cmd-collect">
               <span class="marisa-cmd">status</span>&nbsp;查看目前知识所掌握情况
@@ -75,6 +73,9 @@ export default {
           this.talk_list.push(MarisaCore.speak(MARISA, '要教给魔里沙什么 ..? 现在只能学习语句.. 如"问`答".. 中止教学输入 exit ..'))
           this.cmd_flag = 1
           break
+        case 'forget':
+          this._marisaForget()
+          break
         case 'status':
           this._marisaStatus()
           break
@@ -87,11 +88,11 @@ export default {
       if (answer !== '') {
         this.talk_list.push(MarisaCore.speak(MARISA, answer))
       } else {
-        this.talk_list.push(MarisaCore.speak(MARISA, '唔嗯...不懂你在说什么呢...'))
+        this.talk_list.push(MarisaCore.speak(MARISA, '唔嗯...不懂你在说什么呢...教教我吧~'))
       }
     },
     _teachMarisa (_content) {
-      if (_content === 'exit') {
+      if (_content === 'exit' || _content === 'teach' || _content === 'forget' || _content === 'status') {
         this.talk_list.push(MarisaCore.speak(YOU, '白丝魔理沙，退出学习模式'))
         this.cmd_flag = 0
         return
@@ -103,6 +104,14 @@ export default {
       // 学习模式解除，默认回复，切换到聊天模式
       this.talk_list.push(MarisaCore.speak(MARISA, '行，我知道了'))
       this.cmd_flag = 0
+    },
+    _marisaForget () {
+      let flag = MarisaCore.forget(this.talk_list)
+      if (flag) {
+        this.talk_list.push(MarisaCore.speak(MARISA, '这句话魔理沙说错了么 ... 呜呜呜对不起 ...'))
+      } else {
+        this.talk_list.push(MarisaCore.speak(MARISA, '魔理沙这阵子不太想忘记东西的样子……'))
+      }
     },
     _marisaStatus () {
       let memorise = this.$db.get('memorise').value().length
@@ -120,7 +129,7 @@ export default {
     this._scrollBottom()
   },
   created () {
-    let _startTalk = MarisaCore.speak(MARISA, '白絲魔理沙 Type 0.005,还在继续升级DA☆ZE！')
+    let _startTalk = MarisaCore.speak(MARISA, '白絲魔理沙 Type 0.01,还在继续升级DA☆ZE！')
     this.talk_list.push(_startTalk)
   }
 }
