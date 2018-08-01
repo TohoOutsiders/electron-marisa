@@ -88,6 +88,13 @@ export default class MarisaCore {
         }
       }
     }
+    // 初始安装魔理沙
+    if (memorise.length <= 0) {
+      memorey = {
+        keyword: toPpl,
+        answer: str[1]
+      }
+    }
     return memorey
   }
 
