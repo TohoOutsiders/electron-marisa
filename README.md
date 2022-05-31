@@ -10,6 +10,7 @@ Electron-Marisa项目最后修改的4年前至今，nodejs、npm以及许多依�
 
 在Windows下，需要使用较高版本的包含了windows-build-tools的nodejs和对应的npm安装依赖，再使用较低版本的nodejs和npm进行调试和打包。经过测试，使用nodejs v16.15.0和npm v8.5.5可以完成依赖安装，使用nodejs v6.10.3和npm v3.10.10可以进行调试和打包。
 
+如果你不想折腾，你也可以直接下载打包好的Windows程序。[Google Drive](https://drive.google.com/file/d/19AGSBOgo3w_u_PPGwJ9oG48iceLvFFZh/view?usp=sharing)
 #### Build Setup
 
 ``` bash
